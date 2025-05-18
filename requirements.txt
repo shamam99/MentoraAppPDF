@@ -1,0 +1,10 @@
+fastapi
+uvicorn
+datasets==1.16.1
+numpy==1.22.0
+sentencepiece==0.1.99
+spacy==3.7.2
+tokenizers==0.19.1
+torch==2.1.0
+transformers
+pydantic
