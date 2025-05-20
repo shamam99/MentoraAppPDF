@@ -22,23 +22,23 @@ class QuestionGenerator:
     by setting use_evaluator=False.
     """
 
-    def __init__(self) -> None:
+    def __init__(self, model_dir=None, evaluator_dir=None) -> None:
+        QG_PRETRAINED = model_dir or "iarfmoose/t5-base-question-generator"
 
-        QG_PRETRAINED = "iarfmoose/t5-base-question-generator"
         self.ANSWER_TOKEN = "<answer>"
         self.CONTEXT_TOKEN = "<context>"
         self.SEQ_LENGTH = 512
+        self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-        self.device = torch.device(
-            "cuda" if torch.cuda.is_available() else "cpu")
-
-        self.qg_tokenizer = AutoTokenizer.from_pretrained(
-            QG_PRETRAINED, use_fast=False)
+        # Load T5 model
+        self.qg_tokenizer = AutoTokenizer.from_pretrained(QG_PRETRAINED, use_fast=False)
         self.qg_model = AutoModelForSeq2SeqLM.from_pretrained(QG_PRETRAINED)
         self.qg_model.to(self.device)
         self.qg_model.eval()
 
-        self.qa_evaluator = QAEvaluator()
+        # Load Evaluator using directory
+        self.qa_evaluator = QAEvaluator(evaluator_dir=evaluator_dir)
+
 
     def generate(
         self,
@@ -437,18 +437,13 @@ class QAEvaluator:
     QA pairs.
     """
 
-    def __init__(self) -> None:
-
-        QAE_PRETRAINED = "iarfmoose/bert-base-cased-qa-evaluator"
+    def __init__(self, evaluator_dir=None) -> None:
+        QAE_PRETRAINED = evaluator_dir or "iarfmoose/bert-base-cased-qa-evaluator"
         self.SEQ_LENGTH = 512
-
-        self.device = torch.device(
-            "cuda" if torch.cuda.is_available() else "cpu")
+        self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
         self.qae_tokenizer = AutoTokenizer.from_pretrained(QAE_PRETRAINED)
-        self.qae_model = AutoModelForSequenceClassification.from_pretrained(
-            QAE_PRETRAINED
-        )
+        self.qae_model = AutoModelForSequenceClassification.from_pretrained(QAE_PRETRAINED)
         self.qae_model.to(self.device)
         self.qae_model.eval()
 
