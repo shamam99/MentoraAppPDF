@@ -2,18 +2,16 @@ from fastapi import FastAPI
 from routes import question
 import logging
 
-# ✅ Setup logging
-logging.basicConfig(
-    level=logging.INFO,
-    format="%(asctime)s | %(levelname)s | %(message)s"
-)
+# ✅ Logging
+logging.basicConfig(level=logging.INFO, format="%(asctime)s | %(levelname)s | %(message)s")
 
-# ✅ Initialize FastAPI app
 app = FastAPI(title="Mentora PDF Question Generator")
 
-# ✅ Register route
+# ✅ Include your main route
 app.include_router(question.router)
 
+# ✅ Allow HEAD requests for health check
 @app.get("/")
-def read_root():
+@app.head("/")
+def root():
     return {"message": "Mentora Question Generator API is running."}
