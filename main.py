@@ -1,23 +1,26 @@
 from fastapi import FastAPI
 from routes import question
-from questiongenerator import QuestionGenerator  # ✅ import the generator
-
+from questiongenerator import QuestionGenerator
+import spacy.cli
 import logging
 
-# ✅ Setup logging
+# ✅ 1. Setup logging
 logging.basicConfig(
     level=logging.INFO,
     format="%(asctime)s | %(levelname)s | %(message)s"
 )
 
-# ✅ Initialize FastAPI app
+# ✅ 2. Download spaCy model (will skip if already installed)
+spacy.cli.download("en_core_web_sm")
+
+# ✅ 3. Initialize FastAPI
 app = FastAPI(title="Mentora PDF Question Generator")
 
-# ✅ Load model once at startup
+# ✅ 4. Load HuggingFace models once at startup
 qg = QuestionGenerator()
-app.state.qg = qg  # <- attach to global app state
+app.state.qg = qg
 
-# ✅ Register routes
+# ✅ 5. Include your routes
 app.include_router(question.router)
 
 @app.get("/")
