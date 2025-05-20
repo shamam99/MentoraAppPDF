@@ -1,12 +1,6 @@
 from questiongenerator import QuestionGenerator
 
-def generate_questions_from_text(text: str, mode: str = "both") -> list:
-    # Lazy load the model only when needed
-    if not hasattr(generate_questions_from_text, "qg"):
-        generate_questions_from_text.qg = QuestionGenerator()
-
-    qg = generate_questions_from_text.qg
-
+def generate_questions_from_text(qg: QuestionGenerator, text: str, mode: str = "both") -> list:
     if mode == "tf":
         return qg.generate(text, use_evaluator=True, answer_style="sentences")
     elif mode == "mcq":

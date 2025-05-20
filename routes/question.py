@@ -4,13 +4,13 @@ from services.qg_service import generate_questions_from_text
 import logging
 
 logger = logging.getLogger(__name__)
-
 router = APIRouter(prefix="/api/question", tags=["Question Generation"])
 
 @router.post("/generate")
-def generate_questions(payload: QuestionInput):
+def generate_questions(payload: QuestionInput, request: Request):
     try:
-        questions = generate_questions_from_text(payload.text, payload.mode)
+        qg = request.app.state.qg
+        questions = generate_questions_from_text(qg, payload.text, payload.mode)
         logger.info("Generated %s questions", len(questions))
         return {"questions": questions}
     except Exception as e:
