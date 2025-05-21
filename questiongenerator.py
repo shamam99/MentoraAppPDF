@@ -31,7 +31,12 @@ class QuestionGenerator:
         self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
         # Load T5 model
-        self.qg_tokenizer = AutoTokenizer.from_pretrained(QG_PRETRAINED, use_fast=False)
+        try:
+            self.qg_tokenizer = AutoTokenizer.from_pretrained(QG_PRETRAINED, use_fast=False)
+        except Exception as e:
+            print(f"❌ Failed loading tokenizer from {QG_PRETRAINED} — {e}")
+            raise
+
         self.qg_model = AutoModelForSeq2SeqLM.from_pretrained(QG_PRETRAINED)
         self.qg_model.to(self.device)
         self.qg_model.eval()
@@ -113,7 +118,7 @@ class QuestionGenerator:
 
 
 
-    def generate_qg_inputs(self, text: str, answer_style: str) -> Tuple[List[str], List[str]]:
+    def generate_qg_inputs(self, text: str, answer_style: str) -> Tuple[List[str], List[Any]]:
         """Given a text, returns a list of model inputs and a list of corresponding answers.
         Model inputs take the form "answer_token <answer text> context_token <context text>" where
         the answer is a string extracted from the text, and the context is the wider text.

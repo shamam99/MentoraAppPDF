@@ -9,3 +9,4 @@ pandas
 datasets
 scikit-learn
 python-multipart
+protobuf
